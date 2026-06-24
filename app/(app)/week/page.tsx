@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
+import { getActivePlan } from "@/lib/getActivePlan";
 import Link from "next/link";
 
 const dayEmojis: Record<number, string> = {
@@ -6,15 +7,8 @@ const dayEmojis: Record<number, string> = {
 };
 
 export default async function WeekPage() {
-  const plan = await prisma.workoutPlan.findFirst({
-    where: { isDefault: true },
-    include: {
-      workoutDays: {
-        orderBy: { dayNumber: "asc" },
-        include: { exercises: { orderBy: { order: "asc" } } },
-      },
-    },
-  });
+  const session = await auth();
+  const plan = session?.user?.id ? await getActivePlan(session.user.id) : null;
 
   const today = new Date().getDay();
   const todayDayNum = today === 0 ? 7 : today;

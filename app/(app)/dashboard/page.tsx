@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getActivePlan } from "@/lib/getActivePlan";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -34,15 +35,7 @@ export default async function DashboardPage() {
   const today = getTodayDate();
   const dayNum = getDayOfWeek();
 
-  const plan = await prisma.workoutPlan.findFirst({
-    where: { isDefault: true },
-    include: {
-      workoutDays: {
-        orderBy: { dayNumber: "asc" },
-        include: { exercises: { orderBy: { order: "asc" } } },
-      },
-    },
-  });
+  const plan = session?.user?.id ? await getActivePlan(session.user.id) : null;
 
   const todayDay = plan?.workoutDays.find((d) => d.dayNumber === dayNum);
 
@@ -75,6 +68,17 @@ export default async function DashboardPage() {
           )}
         </Link>
       </div>
+
+      {/* Active plan banner */}
+      {plan && (
+        <Link href="/plans" className="flex items-center justify-between bg-slate-800/50 border border-slate-700/40 rounded-xl px-4 py-2.5">
+          <div>
+            <p className="text-xs text-slate-500 uppercase tracking-wider">Active Plan</p>
+            <p className="text-white text-sm font-medium">{plan.name}</p>
+          </div>
+          <span className="text-violet-400 text-xs font-medium">Change →</span>
+        </Link>
+      )}
 
       {/* Today's workout card */}
       {todayDay ? (

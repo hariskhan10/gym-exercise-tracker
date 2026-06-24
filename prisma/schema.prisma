@@ -21,10 +21,13 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  activePlanId String?
+
   accounts     Account[]
   sessions     Session[]
   exerciseLogs ExerciseLog[]
   workoutPlans WorkoutPlan[]
+  activePlan   WorkoutPlan?  @relation("ActivePlan", fields: [activePlanId], references: [id])
 }
 
 model Account {
@@ -70,8 +73,9 @@ model WorkoutPlan {
   userId      String?
   createdAt   DateTime     @default(now())
 
-  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
-  workoutDays WorkoutDay[]
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workoutDays  WorkoutDay[]
+  activeForUsers User[]    @relation("ActivePlan")
 }
 
 model WorkoutDay {
