@@ -38,18 +38,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!valid) return null;
 
-        return { id: user.id, email: user.email, name: user.name, image: user.image };
+        // Only return id + email — never put large fields (e.g. base64 image)
+        // into the JWT or it will bloat the cookie beyond Vercel's 8KB limit.
+        return { id: user.id, email: user.email, name: user.name };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.id = user.id;
+      // Explicitly exclude image from the token — fetch it fresh from DB when needed
+      delete token.picture;
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
+        // Do not populate session.user.image from token — pages that need it
+        // query the DB directly (profile page, dashboard avatar)
       }
       return session;
     },

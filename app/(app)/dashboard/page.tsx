@@ -47,7 +47,12 @@ export default async function DashboardPage() {
   const totalCount = todayDay?.exercises.length ?? 0;
   const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const user = session?.user;
+  // Fetch image from DB — not from JWT (base64 images would bloat the cookie)
+  const dbUser = session?.user?.id
+    ? await prisma.user.findUnique({ where: { id: session.user.id }, select: { image: true } })
+    : null;
+
+  const user = { ...session?.user, image: dbUser?.image ?? null };
 
   return (
     <div className="p-4 space-y-6">
