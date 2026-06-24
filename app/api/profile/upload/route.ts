@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { prisma } from "@/lib/db";
+
+const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -9,18 +10,20 @@ export async function POST(req: Request) {
 
   const formData = await req.formData();
   const file = formData.get("file") as File;
-
   if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ error: "File too large (max 2 MB)" }, { status: 413 });
+  }
+
   const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  const base64 = Buffer.from(bytes).toString("base64");
+  const dataUrl = `data:${file.type};base64,${base64}`;
 
-  const ext = file.name.split(".").pop();
-  const filename = `${session.user.id}-${Date.now()}.${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { image: dataUrl },
+  });
 
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(path.join(uploadDir, filename), buffer);
-
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  return NextResponse.json({ url: dataUrl });
 }

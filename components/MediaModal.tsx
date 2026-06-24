@@ -1,6 +1,5 @@
 "use client";
 import { useEffect } from "react";
-import Image from "next/image";
 
 type Exercise = {
   id: string;
@@ -59,13 +58,11 @@ export function MediaModal({ exercise, onClose }: { exercise: Exercise; onClose:
 
         {exercise.mediaUrl && (
           <div className="rounded-xl overflow-hidden bg-slate-800">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={exercise.mediaUrl}
               alt={exercise.name}
-              width={640}
-              height={360}
               className="w-full object-contain"
-              unoptimized
             />
           </div>
         )}

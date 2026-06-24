@@ -1,7 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
 import { signOut } from "next-auth/react";
-import Image from "next/image";
 
 type User = {
   id: string;
@@ -78,13 +77,12 @@ export function ProfileForm({ user }: { user: User }) {
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
           {image ? (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={image}
               alt="Profile"
-              width={88}
-              height={88}
-              className="w-22 h-22 rounded-full object-cover border-2 border-violet-500"
-              unoptimized
+              className="rounded-full object-cover border-2 border-violet-500"
+              style={{ width: 88, height: 88 }}
             />
           ) : (
             <div className="w-22 h-22 rounded-full bg-violet-600 flex items-center justify-center text-white text-3xl font-bold border-2 border-violet-500" style={{ width: 88, height: 88 }}>

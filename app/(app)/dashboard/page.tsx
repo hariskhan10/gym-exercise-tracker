@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getActivePlan } from "@/lib/getActivePlan";
 import Link from "next/link";
-import Image from "next/image";
 
 function getTodayDate() {
   return new Date().toISOString().split("T")[0];
@@ -60,7 +59,8 @@ export default async function DashboardPage() {
         </div>
         <Link href="/profile">
           {user?.image ? (
-            <Image src={user.image} alt="Profile" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full object-cover" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center text-white font-bold">
               {(user?.name?.[0] || user?.email?.[0] || "?").toUpperCase()}
