@@ -37,7 +37,7 @@ export default async function DashboardPage() {
 
   const plan = session?.user?.id ? await getActivePlan(session.user.id) : null;
 
-  const todayDay = plan?.workoutDays.find((d) => d.dayNumber === dayNum);
+  const todayDay = plan?.workoutDays.find((d: { dayNumber: number }) => d.dayNumber === dayNum);
 
   const logs = session?.user?.id
     ? await prisma.exerciseLog.findMany({ where: { userId: session.user.id, date: today } })
