@@ -91,7 +91,10 @@ export function DayWorkout({ day, initialLogs, userId }: Props) {
     <div className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3 pt-2">
-        <button onClick={() => router.back()} className="text-slate-400 hover:text-white text-lg">‹</button>
+        <button
+          onClick={() => { router.refresh(); router.back(); }}
+          className="text-slate-400 hover:text-white text-lg"
+        >‹</button>
         <div className="flex-1">
           <h1 className="text-white font-bold text-lg leading-tight">{day.label}</h1>
           {day.focus && <p className="text-slate-400 text-sm">{day.focus}</p>}
